@@ -71,5 +71,6 @@ if args.stop is not None:
 if args.run is not None:
     p = Proc()
     p.run('specialcarrots')
+    p.stop('specialcarrots')
     # nothing else is parsed, exit automatically
     exit(0)
