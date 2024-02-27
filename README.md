@@ -14,6 +14,9 @@ although that is the usecase, this is more general purpose and can be used to ke
 - [x] insert row into table
 - [x] execute a command in background
 - [x] get pid and entry in table
+- [x] query `ps` and find the command and get pid
+- [x] stop the running service using pid
+- [x] stop the running service using command after querying `ps`
 - [ ] needs extensive testing to see that pid + 1 is that of the executed command since pid belongs to the spawned shell
 - [ ] create a multi-core test to check this out
 - [ ] test each service to see if they're running
