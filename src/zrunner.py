@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description=description)
 parser.add_argument(
     "-l",
     "--list",
-    action=argparse.BooleanOptionalAction,
+    nargs="*",
     help="list all the services being managed by zrunner, their current settings, and running status",
 )
 
@@ -24,10 +24,6 @@ parser.add_argument(
     "--migrate",
     action=argparse.BooleanOptionalAction,
     help="migrate all the new services added if any",
-)
-
-parser.add_argument(
-    "--services", nargs="*", type=str, help="show all currently active services"
 )
 
 parser.add_argument(
@@ -47,9 +43,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 # execute by precedence
-if args.list:
+if args.list is not None:
     p = Proc()
-    p.list_all_services()
+    p.list_all_services(args.list)
     # nothing else is parsed, exit automatically
     exit(0)
 
@@ -59,19 +55,14 @@ if args.migrate:
     # nothing else is parsed, exit automatically
     exit(0)
 
-if args.services is not None:
-    print("services called")
-    # nothing else is parsed, exit automatically
-    exit(0)
-
 if args.stop is not None:
     p = Proc()
-    p.stop("specialcarrots")
+    p.stop_all(args.stop)
     # nothing else is parsed, exit automatically
     exit(0)
 
 if args.run is not None:
     p = Proc()
-    p.run("specialcarrots")
+    p.run_all(args.run)
     # nothing else is parsed, exit automatically
     exit(0)
