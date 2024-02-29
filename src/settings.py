@@ -12,13 +12,20 @@ table: <table_name_in_db> | if not_provided/None, use `name` (must be unique)
 category: <category_types> # so that each category gets special treament if needed
 inactive: True/False
 """
+# command should have full path since this is to be run with CRON
 SERVICES_LIST = [
     {
         "name": "specialcarrots",
         "table": "carrots",
-        "command": "zrok share reserved carrots --headless",
+        "command": "/usr/local/bin/zrok share reserved carrots --headless",
         "category": "zrok",
-    }
+    },
+    {
+        "name": "jenkins",
+        "table": "jenkins",
+        "command": "/usr/local/bin/zrok share reserved jenkins --headless",
+        "category": "zrok",
+    },
 ]
 
 # this schema will be common across all tables for services
