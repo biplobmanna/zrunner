@@ -6,6 +6,7 @@ import signal
 
 # local imports
 import settings
+import util
 from db import Sqlite
 
 OPTIONS = [
@@ -29,17 +30,9 @@ class Proc:
         else:
             return False
 
-    def get_services_data(self, name) -> dict[str:str]:
-        _data = None
-        for s in settings.SERVICES_LIST:
-            if s["name"] == name:
-                _data = s
-                break
-        return _data
-
     def run(self, name: str) -> None:
         # get meta data for the service name
-        _data = self.get_services_data(name)
+        _data = util.get_services_data_by_name(name)
 
         # if no match, return
         if not _data:
@@ -89,8 +82,7 @@ class Proc:
                 return line.split(" ")[0]
 
     def stop(self, name) -> None:
-        _data = self.get_services_data(name)
-
+        _data = util.get_services_data_by_name(name)
         # if no match, return
         if not _data:
             print(f"service {name} not found!")
@@ -110,6 +102,52 @@ class Proc:
         _pid = self.find_pid_using_service_command(_data["command"])
         # if nothing found, no harm, no foul
         if _pid is None:
+            print(f"service '{name}' stopped successfully!")
             return
         # stop the process with _pid using os and signal
         os.kill(_pid, signal.SIGTERM)
+
+        # print stop service status
+        print(f"service '{name}' stopped successfully!")
+
+    def list_all_services(self, names=[]):
+        _names = [s.get('name') for s in settings.SERVICES_LIST]
+        _unmatched = []
+        _matched = []
+        # match that the names are present in the list of services
+        if names:
+            for n in names:
+                if n in _names:
+                    _matched.append(n)
+                else:
+                    _unmatched.append(n)
+        else:
+            _matched = _names
+
+        # if no matches (applicable only for named inputs)
+        if not _matched:
+            print(f"the input names did not match any services:\n{_unmatched}")
+            return
+
+        print("\n============================================")
+        print("Service Details:")
+        print("============================================\n")
+        # for each of the service names:
+        # 1. find the latest entry in db
+        # 2. find their current status if `inactive=false`
+        # 3. display all details
+        for _name in _matched:
+            _data = util.get_services_data_by_name(_name)
+            _table_name = _data.get("table") or _data.get("name")
+            _latest = self.db.get_latest(_table_name)
+            _pid = _latest[1]
+            _cmd_list = ["ps", "-Flww", "-p", str(_pid)]
+            _ps = subprocess.Popen(_cmd_list, stdout=subprocess.PIPE, universal_newlines=True)
+            # print all the details below
+            for k, v in _data.items():
+                print(f"{k}: {v}")
+            print("\nprocess status:")
+            print("---------------")
+            for line in _ps.stdout:
+                print(line)
+            print("--------------------------------------------\n")
