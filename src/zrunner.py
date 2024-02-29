@@ -48,7 +48,8 @@ args = parser.parse_args()
 
 # execute by precedence
 if args.list:
-    print("list called")
+    p = Proc()
+    p.list_all_services()
     # nothing else is parsed, exit automatically
     exit(0)
 
@@ -64,13 +65,13 @@ if args.services is not None:
     exit(0)
 
 if args.stop is not None:
-    print("stop called")
+    p = Proc()
+    p.stop("specialcarrots")
     # nothing else is parsed, exit automatically
     exit(0)
 
 if args.run is not None:
     p = Proc()
-    p.run('specialcarrots')
-    p.stop('specialcarrots')
+    p.run("specialcarrots")
     # nothing else is parsed, exit automatically
     exit(0)
