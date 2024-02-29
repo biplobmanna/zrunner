@@ -43,28 +43,6 @@ class Sqlite:
         else:
             print(f"nothing to migrate...")
 
-    def list_active_services(self, names=[]):
-        _names = [s.name for s in settings.SERVICES_LIST]
-        _unmatched = []
-        _matched = []
-        # match that the names are present in the list of services
-        if names:
-            for n in names:
-                if n in _names:
-                    _matched.append(n)
-                else:
-                    _unmatched.append(n)
-        else:
-            _matched = _names
-
-        # if no matches (applicable only for named inputs)
-        if not _matched:
-            print(f"the input names did not match any services:\n{_unmatched}")
-            return
-
-        # query the db for the matches, and
-        pass
-
     def get_latest(self, table_name):
         _query = f"select * from {table_name} order by id desc"
         _result = self.cur.execute(_query)
